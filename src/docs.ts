@@ -4,6 +4,7 @@ const DOC_TOP_URL = 'https://developer.mixi.social'
 
 const getDocPaths = async () => {
   const res = await fetch(`${DOC_TOP_URL}/docs/llms-full.txt`)
+  if (!res.ok) throw new Error(`Failed to fetch llms-full.txt: ${res.status}`)
   const llmsFullText = await res.text()
 
   const textLines = llmsFullText.split('\n')
@@ -20,6 +21,7 @@ const getDocPaths = async () => {
 
 const getDocContent = async (path: string) => {
   const res = await fetch(`${DOC_TOP_URL}${path}.mdx`)
+  if (!res.ok) throw new Error(`Failed to fetch ${path}.mdx: ${res.status}`)
   return await res.text()
 }
 
