@@ -34,10 +34,11 @@ describe('loadDocs', () => {
     expect(result.get('/docs/b')).toBe('content b')
   })
 
-  it('ドキュメントが KV に存在しない場合は空文字を返す', async () => {
+  it('ドキュメントが KV に存在しない場合はエントリから除外する', async () => {
     const store = new Map([['manifest', JSON.stringify(['/docs/a'])]])
     const result = await loadDocs(createMockKV(store))
-    expect(result.get('/docs/a')).toBe('')
+    expect(result.has('/docs/a')).toBe(false)
+    expect(result.size).toBe(0)
   })
 
   it('空の manifest の場合は空の Map を返す', async () => {

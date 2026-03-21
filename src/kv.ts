@@ -14,13 +14,14 @@ export const loadDocs = async (kv: KVStore): Promise<DocMap> => {
   if (manifestJson === null) return new Map()
 
   const paths: string[] = JSON.parse(manifestJson)
-  const entries = await Promise.all(
-    paths.map(
-      async (path): Promise<[string, string]> => [path, (await kv.get(docKey(path))) ?? ''],
-    ),
+  const results = await Promise.all(
+    paths.map(async (path) => {
+      const content = await kv.get(docKey(path))
+      return content !== null ? ([path, content] as [string, string]) : null
+    }),
   )
 
-  return new Map(entries)
+  return new Map(results.filter((entry) => entry !== null))
 }
 
 export const saveDocs = async (kv: KVStore, docs: DocMap, diff: DiffResult): Promise<void> => {
