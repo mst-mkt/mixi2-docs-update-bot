@@ -2,32 +2,28 @@ import type { Interceptor, Transport } from '@connectrpc/connect'
 import { createFetchClient } from '@connectrpc/connect/protocol'
 import { createTransport } from '@connectrpc/connect/protocol-grpc'
 
-export function createGrpcTransport(options: {
+type GrpcTransportOptions = {
   baseUrl: string
   interceptors?: Interceptor[]
   fetch?: typeof globalThis.fetch
-}): Transport {
-  const baseFetch = options.fetch ?? fetch
+}
 
-  const wrappedFetch: typeof fetch = async (input, init) => {
-    const res = await baseFetch(input, init)
-
-    if (!res.headers.has('grpc-status')) {
-      const headers = new Headers(res.headers)
-      headers.set('grpc-status', '0')
-
-      return new Response(res.body, {
+const ensureGrpcStatus = (res: Response): Response =>
+  res.headers.has('grpc-status')
+    ? res
+    : new Response(res.body, {
         status: res.status,
         statusText: res.statusText,
-        headers,
+        headers: new Headers([...res.headers, ['grpc-status', '0']]),
       })
-    }
 
-    return res
-  }
+export const createGrpcTransport = (options: GrpcTransportOptions): Transport => {
+  const baseFetch = options.fetch ?? fetch
 
   return createTransport({
-    httpClient: createFetchClient(wrappedFetch),
+    httpClient: createFetchClient(async (input, init) =>
+      ensureGrpcStatus(await baseFetch(input, init)),
+    ),
     baseUrl: options.baseUrl,
     useBinaryFormat: true,
     interceptors: options.interceptors ?? [],

@@ -8,51 +8,47 @@ export type AiClient = {
   run(this: void, model: string, input: { messages: Message[] }): Promise<unknown>
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
 const extractContent = (response: unknown): string => {
   if (typeof response === 'string') return response.trim()
-  if (typeof response !== 'object' || response === null) return ''
+  if (!isRecord(response)) return ''
+  if (typeof response.response === 'string') return response.response.trim()
+  if (!Array.isArray(response.choices)) return ''
 
-  const obj = response as Record<string, unknown>
+  const first: unknown = response.choices[0]
+  if (!isRecord(first)) return ''
+  if (!isRecord(first.message)) return ''
 
-  if (typeof obj.response === 'string') return obj.response.trim()
-
-  const choices = obj.choices
-  if (!Array.isArray(choices)) return ''
-
-  const message = (choices[0] as Record<string, unknown> | undefined)?.message
-  if (typeof message !== 'object' || message === null) return ''
-
-  const content = (message as Record<string, unknown>).content
-  if (typeof content !== 'string') return ''
-
-  return content.trim()
+  return typeof first.message.content === 'string' ? first.message.content.trim() : ''
 }
 
-const buildPrompt = (change: DocChange, newDocs: DocMap, oldDocs: DocMap): string => {
-  const parts: string[] = []
-
-  if (change.type === 'added') {
-    parts.push(`新しいドキュメントが追加されました: ${change.path}`)
-    parts.push('--- ドキュメント全文 ---')
-    parts.push(newDocs.get(change.path) ?? '')
-  }
-
-  if (change.type === 'removed') {
-    parts.push(`ドキュメントが削除されました: ${change.path}`)
-    parts.push('--- 削除されたドキュメント全文 ---')
-    parts.push(oldDocs.get(change.path) ?? '')
-  }
-
-  if (change.type === 'modified') {
-    parts.push(`ドキュメントが更新されました: ${change.path}`)
-    parts.push('--- 更新後のドキュメント全文 ---')
-    parts.push(newDocs.get(change.path) ?? '')
-    parts.push('--- 変更差分 (unified diff) ---')
-    parts.push(change.patch ?? '')
-  }
-
-  return parts.join('\n')
+const PROMPT_TEMPLATES: Record<
+  DocChange['type'],
+  (change: DocChange, newDocs: DocMap, oldDocs: DocMap) => readonly string[]
+> = {
+  added: (change, newDocs) => [
+    `新しいドキュメントが追加されました: ${change.path}`,
+    '--- ドキュメント全文 ---',
+    newDocs.get(change.path) ?? '',
+  ],
+  removed: (change, _, oldDocs) => [
+    `ドキュメントが削除されました: ${change.path}`,
+    '--- 削除されたドキュメント全文 ---',
+    oldDocs.get(change.path) ?? '',
+  ],
+  modified: (change, newDocs) => [
+    `ドキュメントが更新されました: ${change.path}`,
+    '--- 更新後のドキュメント全文 ---',
+    newDocs.get(change.path) ?? '',
+    '--- 変更差分 (unified diff) ---',
+    change.patch ?? '',
+  ],
 }
+
+const buildPrompt = (change: DocChange, newDocs: DocMap, oldDocs: DocMap): string =>
+  PROMPT_TEMPLATES[change.type](change, newDocs, oldDocs).join('\n')
 
 const SYSTEM_PROMPT = [
   'あなたはドキュメント変更の要約を作成するアシスタントです。',

@@ -37,14 +37,15 @@ const formatReply = (change: DocChange): string => {
   return `${header}\n${truncate(change.summary, maxSummaryLength)}`
 }
 
+const CHANGE_TYPES = ['added', 'modified', 'removed'] as const
+
 export const formatSummary = (diff: DiffResult): string => {
   const counts = Object.groupBy(diff.changes, (c) => c.type)
 
-  const parts = [
-    counts.added?.length && `追加: ${counts.added.length}件`,
-    counts.modified?.length && `更新: ${counts.modified.length}件`,
-    counts.removed?.length && `削除: ${counts.removed.length}件`,
-  ].filter(Boolean)
+  const parts = CHANGE_TYPES.flatMap((type) => {
+    const count = counts[type]?.length
+    return count ? [`${TYPE_LABELS[type]}: ${count}件`] : []
+  })
 
   const header = `[mixi2 Docs 更新]\n${parts.join(' / ')}`
 

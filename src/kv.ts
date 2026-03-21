@@ -25,11 +25,16 @@ export const loadDocs = async (kv: KVStore): Promise<DocMap> => {
 }
 
 export const saveDocs = async (kv: KVStore, docs: DocMap, diff: DiffResult): Promise<void> => {
-  await Promise.all([
-    ...diff.changes
-      .filter((c) => c.type !== 'removed')
-      .map((c) => kv.put(docKey(c.path), docs.get(c.path) ?? '')),
-    ...diff.changes.filter((c) => c.type === 'removed').map((c) => kv.delete(docKey(c.path))),
-  ])
+  const upserts = diff.changes
+    .filter((c) => c.type !== 'removed')
+    .flatMap((c) => {
+      const content = docs.get(c.path)
+      return content !== undefined ? [kv.put(docKey(c.path), content)] : []
+    })
+  const deletes = diff.changes
+    .filter((c) => c.type === 'removed')
+    .map((c) => kv.delete(docKey(c.path)))
+
+  await Promise.all([...upserts, ...deletes])
   await kv.put(MANIFEST_KEY, JSON.stringify([...docs.keys()]))
 }

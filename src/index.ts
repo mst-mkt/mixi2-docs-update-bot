@@ -29,13 +29,14 @@ const handleScheduled = async (
 
   console.log(`Changes detected: ${diff.changes.length} file(s)`)
 
-  const changesWithSummary = await Promise.all(
-    diff.changes.map(async (change) => ({
-      ...change,
-      summary: await summarizeChange(env.AI, change, newDocs, oldDocs),
-    })),
-  )
-  const diffWithSummary = { changes: changesWithSummary }
+  const diffWithSummary = {
+    changes: await Promise.all(
+      diff.changes.map(async (change) => ({
+        ...change,
+        summary: await summarizeChange(env.AI, change, newDocs, oldDocs),
+      })),
+    ),
+  }
 
   const client = createClient(env)
   const summary = formatSummary(diffWithSummary)
