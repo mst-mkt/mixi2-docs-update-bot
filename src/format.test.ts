@@ -5,8 +5,8 @@ import { formatReplies, formatSummary } from './format'
 const change = (
   path: string,
   type: DocChange['type'],
-  lineDiff?: { added: number; removed: number },
-): DocChange => ({ path, type, lineDiff })
+  opts?: { lineDiff?: { added: number; removed: number }; summary?: string },
+): DocChange => ({ path, type, lineDiff: opts?.lineDiff, summary: opts?.summary })
 
 const diff = (...changes: DocChange[]): DiffResult => ({ changes })
 
@@ -68,34 +68,42 @@ describe('formatReplies', () => {
   })
 
   it('lineDiff 情報が含まれる', () => {
-    const replies = formatReplies(diff(change('/docs/a', 'modified', { added: 3, removed: 1 })))
+    const replies = formatReplies(
+      diff(change('/docs/a', 'modified', { lineDiff: { added: 3, removed: 1 } })),
+    )
     expect(replies[0]).toContain('(+3/-1)')
   })
 
-  it('149文字に収まる複数ファイルは1リプライにまとまる', () => {
-    const replies = formatReplies(diff(change('/docs/a', 'added'), change('/docs/b', 'added')))
-    expect(replies).toHaveLength(1)
-    expect(replies[0]).toContain('/docs/a')
-    expect(replies[0]).toContain('/docs/b')
+  it('AI 要約がリプライに含まれる', () => {
+    const replies = formatReplies(
+      diff(change('/docs/a', 'modified', { summary: 'Dockerを追加しました。' })),
+    )
+    expect(replies[0]).toContain('[更新] /docs/a')
+    expect(replies[0]).toContain('Dockerを追加しました。')
   })
 
-  it('149文字を超える場合は複数リプライに分割され各リプライが149文字以内', () => {
-    const changes = Array.from({ length: 20 }, (_, i) =>
-      change(`/docs/section/page-${i}`, 'modified', { added: i, removed: i }),
+  it('AI 要約が149文字を超える場合は切り詰められる', () => {
+    const longSummary = 'あ'.repeat(200)
+    const replies = formatReplies(diff(change('/docs/a', 'modified', { summary: longSummary })))
+    expect(replies[0]?.length).toBeLessThanOrEqual(149)
+    expect(replies[0]).toContain('…')
+  })
+
+  it('各変更が個別のリプライになる', () => {
+    const replies = formatReplies(
+      diff(
+        change('/docs/a', 'added', { summary: '新規ガイド追加' }),
+        change('/docs/b', 'modified', { summary: '設定変更' }),
+      ),
     )
-    const replies = formatReplies(diff(...changes))
-    expect(replies.length).toBeGreaterThan(1)
-    for (const reply of replies) {
-      expect(reply.length).toBeLessThanOrEqual(149)
-    }
+    expect(replies).toHaveLength(2)
+    expect(replies[0]).toContain('/docs/a')
+    expect(replies[1]).toContain('/docs/b')
   })
 
   it('最大9件のリプライで省略メッセージが含まれる', () => {
-    const changes = Array.from({ length: 50 }, (_, i) =>
-      change(`/docs/guides/very-long-document-name-number-${i}`, 'modified', {
-        added: 100,
-        removed: 50,
-      }),
+    const changes = Array.from({ length: 15 }, (_, i) =>
+      change(`/docs/page-${i}`, 'modified', { summary: `変更${i}` }),
     )
     const replies = formatReplies(diff(...changes))
     expect(replies.length).toBeLessThanOrEqual(9)

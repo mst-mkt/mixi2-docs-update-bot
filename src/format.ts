@@ -24,6 +24,19 @@ const formatChangeLine = (change: DocChange): string => {
   return `[${TYPE_LABELS[change.type]}] ${change.path}${lineDiffInfo}`
 }
 
+const truncate = (text: string, max: number): string =>
+  text.length <= max ? text : `${text.slice(0, max - 1)}…`
+
+const formatReply = (change: DocChange): string => {
+  const header = formatChangeLine(change)
+  if (!change.summary) return header
+
+  const maxSummaryLength = MAX_POST_LENGTH - header.length - 1
+  if (maxSummaryLength <= 0) return header
+
+  return `${header}\n${truncate(change.summary, maxSummaryLength)}`
+}
+
 export const formatSummary = (diff: DiffResult): string => {
   const counts = Object.groupBy(diff.changes, (c) => c.type)
 
@@ -41,38 +54,13 @@ export const formatSummary = (diff: DiffResult): string => {
   }, header)
 }
 
-const packReplies = (
-  changes: DocChange[],
-  replies: string[] = [],
-  current: string = '',
-): string[] => {
-  const head = changes[0]
-  if (head === undefined) {
-    return current === '' ? replies : [...replies, current]
-  }
+export const formatReplies = (diff: DiffResult): string[] => {
+  const allReplies = diff.changes.map(formatReply)
 
-  if (replies.length >= MAX_REPLIES - 1 && (current !== '' || changes.length > 1)) {
-    const omitted = changes.length + (current !== '' ? 1 : 0)
-    return [
-      ...replies,
-      ...(current !== '' ? [current] : []),
-      `他 ${omitted - 1}件の変更があります`,
-    ].slice(0, MAX_REPLIES)
-  }
+  if (allReplies.length <= MAX_REPLIES) return allReplies
 
-  const rest = changes.slice(1)
-  const line = formatChangeLine(head)
-
-  if (current === '') {
-    return packReplies(rest, replies, line)
-  }
-
-  const candidate = `${current}\n${line}`
-  if (candidate.length <= MAX_POST_LENGTH) {
-    return packReplies(rest, replies, candidate)
-  }
-
-  return packReplies(changes, [...replies, current], '')
+  return [
+    ...allReplies.slice(0, MAX_REPLIES - 1),
+    `他 ${allReplies.length - MAX_REPLIES + 1}件の変更があります`,
+  ]
 }
-
-export const formatReplies = (diff: DiffResult): string[] => packReplies(diff.changes)

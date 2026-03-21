@@ -13,6 +13,9 @@
       "id": "abb9f408fe4c43a3aa4b164a6ac2c02d",
     },
   ],
+  "ai": {
+    "binding": "AI",
+  },
   "triggers": {
     "crons": ["0 * * * *"],
   },

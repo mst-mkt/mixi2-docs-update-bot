@@ -3,6 +3,7 @@ import { getAllDocs } from './docs'
 import { formatReplies, formatSummary } from './format'
 import { loadDocs, saveDocs } from './kv'
 import { createClient, postThread } from './mixi2'
+import { summarizeChange } from './summarize'
 
 const handleScheduled = async (
   _controller: ScheduledController,
@@ -20,9 +21,17 @@ const handleScheduled = async (
 
   console.log(`Changes detected: ${diff.changes.length} file(s)`)
 
+  const changesWithSummary = await Promise.all(
+    diff.changes.map(async (change) => ({
+      ...change,
+      summary: await summarizeChange(env.AI, change, newDocs, oldDocs),
+    })),
+  )
+  const diffWithSummary = { changes: changesWithSummary }
+
   const client = createClient(env)
-  const summary = formatSummary(diff)
-  const replies = formatReplies(diff)
+  const summary = formatSummary(diffWithSummary)
+  const replies = formatReplies(diffWithSummary)
 
   await postThread(client, summary, replies)
   await saveDocs(env.KV, newDocs, diff)

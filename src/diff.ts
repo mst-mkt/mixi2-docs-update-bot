@@ -1,4 +1,4 @@
-import { diffLines } from 'diff'
+import { createPatch, diffLines } from 'diff'
 
 export type DocMap = Map<string, string>
 
@@ -11,6 +11,8 @@ export type DocChange = {
   path: string
   type: 'added' | 'modified' | 'removed'
   lineDiff?: LineDiff
+  patch?: string
+  summary?: string
 }
 
 export type DiffResult = {
@@ -26,11 +28,12 @@ const computeLineDiff = (oldContent: string, newContent: string): LineDiff =>
     { added: 0, removed: 0 },
   )
 
-const docChange = (path: string, type: DocChange['type'], lineDiff?: LineDiff): DocChange => ({
-  path,
-  type,
-  lineDiff,
-})
+const docChange = (
+  path: string,
+  type: DocChange['type'],
+  lineDiff?: LineDiff,
+  patch?: string,
+): DocChange => ({ path, type, lineDiff, patch })
 
 export const computeDiff = (oldDocs: DocMap, newDocs: DocMap): DiffResult => {
   const added = [...newDocs.keys()]
@@ -40,7 +43,8 @@ export const computeDiff = (oldDocs: DocMap, newDocs: DocMap): DiffResult => {
   const modified = [...newDocs.entries()].flatMap(([path, content]) => {
     const oldContent = oldDocs.get(path)
     if (oldContent === undefined || oldContent === content) return []
-    return [docChange(path, 'modified', computeLineDiff(oldContent, content))]
+    const patch = createPatch(path, oldContent, content)
+    return [docChange(path, 'modified', computeLineDiff(oldContent, content), patch)]
   })
 
   const removed = [...oldDocs.keys()]
