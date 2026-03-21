@@ -1,0 +1,66 @@
+{/_
+テスト用のサンプルドキュメントです
+実際の mixi2 ドキュメントとは関係ありません
+_/}
+
+# API Reference
+
+## Overview
+
+This document describes all available API methods.
+
+## Methods
+
+### `hello`
+
+Send a greeting message.
+
+```typescript
+const result = await client.hello({
+  name: 'world',
+})
+```
+
+**Parameters:**
+
+| Name   | Type     | Required | Description   |
+| ------ | -------- | -------- | ------------- |
+| `name` | `string` | Yes      | Name to greet |
+
+**Response:**
+
+| Field     | Type     | Description          |
+| --------- | -------- | -------------------- |
+| `message` | `string` | The greeting message |
+
+### `goodbye`
+
+Send a farewell message.
+
+```typescript
+const result = await client.goodbye({
+  name: 'world',
+})
+```
+
+**Parameters:**
+
+| Name   | Type     | Required | Description      |
+| ------ | -------- | -------- | ---------------- |
+| `name` | `string` | Yes      | Name to farewell |
+
+## Rate Limits
+
+| Method    | Limit   | Window   |
+| --------- | ------- | -------- |
+| `hello`   | 100/min | 1 minute |
+| `goodbye` | 100/min | 1 minute |
+
+## Error Codes
+
+| Code | Description           |
+| ---- | --------------------- |
+| 400  | Bad Request           |
+| 401  | Unauthorized          |
+| 429  | Too Many Requests     |
+| 500  | Internal Server Error |

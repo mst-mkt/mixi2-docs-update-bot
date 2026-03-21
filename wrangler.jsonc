@@ -2,7 +2,18 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "mixi2-docs-update-bot",
   "main": "./src/index.ts",
-  "compatibility_date": "2026-03-15",
+  "compatibility_date": "2026-03-14",
   "compatibility_flags": ["nodejs_compat"],
-  "observability": { "enabled": true },
+  "observability": {
+    "enabled": true,
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "abb9f408fe4c43a3aa4b164a6ac2c02d",
+    },
+  ],
+  "triggers": {
+    "crons": ["0 * * * *"],
+  },
 }

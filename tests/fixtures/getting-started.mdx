@@ -1,0 +1,44 @@
+{/_
+テスト用のサンプルドキュメントです
+実際の mixi2 ドキュメントとは関係ありません
+_/}
+
+# Getting Started
+
+## Prerequisites
+
+- Node.js 20 or later
+- pnpm 9 or later
+
+## Installation
+
+```bash
+pnpm add sample-sdk
+```
+
+## Quick Start
+
+Create a client and make your first request:
+
+```typescript
+import { createClient } from 'sample-sdk'
+
+const client = createClient({
+  apiKey: process.env.API_KEY,
+})
+
+const result = await client.hello({ name: 'world' })
+console.log(result.message)
+```
+
+## Configuration
+
+| Option   | Type     | Required | Default          |
+| -------- | -------- | -------- | ---------------- |
+| `apiKey` | `string` | Yes      | -                |
+| `region` | `string` | No       | `ap-northeast-1` |
+
+## Next Steps
+
+- [API Reference](/docs/api-reference) - Full API documentation
+- [Examples](/docs/examples) - Code examples

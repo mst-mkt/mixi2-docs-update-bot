@@ -1,0 +1,70 @@
+{/_
+テスト用のサンプルドキュメントです (編集後)
+実際の mixi2 ドキュメントとは関係ありません
+変更箇所: - hello メソッドに locale パラメータを追加 - Rate Limits の hello を 100/min から 200/min に変更 - Error Codes に 403 Forbidden を追加
+_/}
+
+# API Reference
+
+## Overview
+
+This document describes all available API methods.
+
+## Methods
+
+### `hello`
+
+Send a greeting message.
+
+```typescript
+const result = await client.hello({
+  name: 'world',
+  locale: 'ja',
+})
+```
+
+**Parameters:**
+
+| Name     | Type     | Required | Description            |
+| -------- | -------- | -------- | ---------------------- |
+| `name`   | `string` | Yes      | Name to greet          |
+| `locale` | `string` | No       | Locale for the message |
+
+**Response:**
+
+| Field     | Type     | Description          |
+| --------- | -------- | -------------------- |
+| `message` | `string` | The greeting message |
+
+### `goodbye`
+
+Send a farewell message.
+
+```typescript
+const result = await client.goodbye({
+  name: 'world',
+})
+```
+
+**Parameters:**
+
+| Name   | Type     | Required | Description      |
+| ------ | -------- | -------- | ---------------- |
+| `name` | `string` | Yes      | Name to farewell |
+
+## Rate Limits
+
+| Method    | Limit   | Window   |
+| --------- | ------- | -------- |
+| `hello`   | 200/min | 1 minute |
+| `goodbye` | 100/min | 1 minute |
+
+## Error Codes
+
+| Code | Description           |
+| ---- | --------------------- |
+| 400  | Bad Request           |
+| 401  | Unauthorized          |
+| 403  | Forbidden             |
+| 429  | Too Many Requests     |
+| 500  | Internal Server Error |

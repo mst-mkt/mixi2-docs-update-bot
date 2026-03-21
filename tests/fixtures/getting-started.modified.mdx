@@ -1,0 +1,48 @@
+{/_
+テスト用のサンプルドキュメントです (編集後)
+実際の mixi2 ドキュメントとは関係ありません
+変更箇所: - Prerequisites に Docker を追加 - Configuration テーブルに timeout オプションを追加 - Next Steps に Deployment ガイドへのリンクを追加
+_/}
+
+# Getting Started
+
+## Prerequisites
+
+- Node.js 20 or later
+- pnpm 9 or later
+- Docker (optional, for local development)
+
+## Installation
+
+```bash
+pnpm add sample-sdk
+```
+
+## Quick Start
+
+Create a client and make your first request:
+
+```typescript
+import { createClient } from 'sample-sdk'
+
+const client = createClient({
+  apiKey: process.env.API_KEY,
+})
+
+const result = await client.hello({ name: 'world' })
+console.log(result.message)
+```
+
+## Configuration
+
+| Option    | Type     | Required | Default          |
+| --------- | -------- | -------- | ---------------- |
+| `apiKey`  | `string` | Yes      | -                |
+| `region`  | `string` | No       | `ap-northeast-1` |
+| `timeout` | `number` | No       | `30000`          |
+
+## Next Steps
+
+- [API Reference](/docs/api-reference) - Full API documentation
+- [Examples](/docs/examples) - Code examples
+- [Deployment](/docs/deployment) - Deploy to production
