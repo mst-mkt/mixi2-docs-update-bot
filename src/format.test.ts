@@ -110,6 +110,12 @@ describe('formatReplies', () => {
     expect(replies.at(-1)).toMatch(/他 \d+件の変更があります/)
   })
 
+  it('パスが非常に長い場合でも149文字を超えない', () => {
+    const longPath = `/docs/${'a'.repeat(200)}`
+    const replies = formatReplies(diff(change(longPath, 'modified', { summary: '変更内容' })))
+    expect(replies[0]?.length).toBeLessThanOrEqual(149)
+  })
+
   it('変更なしの場合は空配列', () => {
     expect(formatReplies(diff())).toEqual([])
   })

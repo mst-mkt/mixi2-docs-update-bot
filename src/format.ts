@@ -28,7 +28,7 @@ const truncate = (text: string, max: number): string =>
   text.length <= max ? text : `${text.slice(0, max - 1)}…`
 
 const formatReply = (change: DocChange): string => {
-  const header = formatChangeLine(change)
+  const header = truncate(formatChangeLine(change), MAX_POST_LENGTH)
   if (!change.summary) return header
 
   const maxSummaryLength = MAX_POST_LENGTH - header.length - 1
