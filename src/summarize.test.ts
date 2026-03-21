@@ -99,19 +99,4 @@ describe('summarizeChange', () => {
 
     expect(result).toBe('Dockerを追加、timeoutオプションを追加。')
   })
-
-  it('choices 形式で think タグが含まれる場合は除去する', async () => {
-    const oldDocs: DocMap = new Map([['/docs/getting-started', gettingStartedOld]])
-    const newDocs: DocMap = new Map([['/docs/getting-started', gettingStartedNew]])
-    const diff = computeDiff(oldDocs, newDocs)
-    const change = diff.changes[0]
-    if (!change) throw new Error('no change detected')
-
-    const mockAI = createMockAIChoices(
-      '<think>\nLet me analyze...\n</think>\nDockerを追加、timeoutオプションを追加。',
-    )
-    const result = await summarizeChange(mockAI, change, newDocs, oldDocs)
-
-    expect(result).toBe('Dockerを追加、timeoutオプションを追加。')
-  })
 })

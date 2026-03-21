@@ -9,12 +9,12 @@ export type AiClient = {
 }
 
 const extractContent = (response: unknown): string => {
-  if (typeof response === 'string') return response
+  if (typeof response === 'string') return response.trim()
   if (typeof response !== 'object' || response === null) return ''
 
   const obj = response as Record<string, unknown>
 
-  if (typeof obj.response === 'string') return obj.response
+  if (typeof obj.response === 'string') return obj.response.trim()
 
   const choices = obj.choices
   if (!Array.isArray(choices)) return ''
@@ -25,7 +25,7 @@ const extractContent = (response: unknown): string => {
   const content = (message as Record<string, unknown>).content
   if (typeof content !== 'string') return ''
 
-  return content.replace(/^[\s\S]*?<\/think>\s*/m, '').trim()
+  return content.trim()
 }
 
 const buildPrompt = (change: DocChange, newDocs: DocMap, oldDocs: DocMap): string => {
