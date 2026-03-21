@@ -12,6 +12,14 @@ const handleScheduled = async (
 ) => {
   const newDocs = await getAllDocs()
   const oldDocs = await loadDocs(env.KV)
+
+  if (oldDocs.size === 0) {
+    console.log('Initial run: saving docs without posting.')
+    const initialDiff = computeDiff(oldDocs, newDocs)
+    await saveDocs(env.KV, newDocs, initialDiff)
+    return
+  }
+
   const diff = computeDiff(oldDocs, newDocs)
 
   if (!hasChanges(diff)) {
