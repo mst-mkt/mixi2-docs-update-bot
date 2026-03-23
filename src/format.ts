@@ -1,4 +1,5 @@
 import type { DiffResult, DocChange } from './diff'
+import { DOC_TOP_URL } from './docs'
 
 const MAX_POST_LENGTH = 149
 const MAX_REPLIES = 9
@@ -27,14 +28,27 @@ const formatChangeLine = (change: DocChange): string => {
 const truncate = (text: string, max: number): string =>
   text.length <= max ? text : `${text.slice(0, max - 1)}…`
 
+const formatDocLink = (change: DocChange): string =>
+  change.type !== 'removed' ? `\ndocs: ${DOC_TOP_URL}${change.path}` : ''
+
+const buildReplyParts = (header: string, summary: string | undefined, max: number): string => {
+  const truncatedHeader = truncate(header, max)
+  if (!summary) return truncatedHeader
+
+  const summaryMax = max - truncatedHeader.length - 1
+  if (summaryMax <= 0) return truncatedHeader
+
+  return `${truncatedHeader}\n${truncate(summary, summaryMax)}`
+}
+
 const formatReply = (change: DocChange): string => {
-  const header = truncate(formatChangeLine(change), MAX_POST_LENGTH)
-  if (!change.summary) return header
+  const header = formatChangeLine(change)
+  const docLink = formatDocLink(change)
+  const contentMax = MAX_POST_LENGTH - docLink.length
 
-  const maxSummaryLength = MAX_POST_LENGTH - header.length - 1
-  if (maxSummaryLength <= 0) return header
+  if (contentMax <= 0) return truncate(header, MAX_POST_LENGTH)
 
-  return `${header}\n${truncate(change.summary, maxSummaryLength)}`
+  return `${buildReplyParts(header, change.summary, contentMax)}${docLink}`
 }
 
 const CHANGE_TYPES = ['added', 'modified', 'removed'] as const

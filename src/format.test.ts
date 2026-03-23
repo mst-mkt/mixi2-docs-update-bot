@@ -82,6 +82,16 @@ describe('formatReplies', () => {
     expect(replies[0]).toContain('Dockerを追加しました。')
   })
 
+  it('追加・更新のリプライにドキュメントリンクが含まれる', () => {
+    const replies = formatReplies(diff(change('/docs/a', 'added')))
+    expect(replies[0]).toContain('docs: https://developer.mixi.social/docs/a')
+  })
+
+  it('削除のリプライにはドキュメントリンクが含まれない', () => {
+    const replies = formatReplies(diff(change('/docs/a', 'removed')))
+    expect(replies[0]).not.toContain('docs:')
+  })
+
   it('AI 要約が149文字を超える場合は切り詰められる', () => {
     const longSummary = 'あ'.repeat(200)
     const replies = formatReplies(diff(change('/docs/a', 'modified', { summary: longSummary })))

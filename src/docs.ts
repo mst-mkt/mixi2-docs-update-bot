@@ -1,6 +1,6 @@
 import type { DocMap } from './diff'
 
-const DOC_TOP_URL = 'https://developer.mixi.social'
+export const DOC_TOP_URL = 'https://developer.mixi.social'
 const HEADING_PATH_PATTERN = /^# .+ \((.+)\)$/
 
 const getDocPaths = async (): Promise<string[]> => {
