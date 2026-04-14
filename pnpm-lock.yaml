@@ -20,6 +20,12 @@ importers:
       diff:
         specifier: ^8.0.3
         version: 8.0.3
+      hono:
+        specifier: ^4.12.12
+        version: 4.12.12
+      kuron:
+        specifier: ^0.0.3
+        version: 0.0.3
     devDependencies:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260309.1
@@ -1067,6 +1073,10 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  hono@4.12.12:
+    resolution: {integrity: sha512-p1JfQMKaceuCbpJKAPKVqyqviZdS0eUxH9v82oWo1kb9xjQ5wA6iP3FNVAPDFlz5/p7d45lO+BpSk1tuSZMF4Q==}
+    engines: {node: '>=16.9.0'}
+
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
@@ -1077,6 +1087,10 @@ packages:
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
+
+  kuron@0.0.3:
+    resolution: {integrity: sha512-qNH3PWlxOm4mHgzZUaI7YpDbIcDVzozcoZkNUlzjVGLwndTS21eBdhMzD6soXiTGbpRsQ1r5Gxs4n6CVBHiQ3A==}
+    engines: {node: '>=18.0.0'}
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
@@ -2032,12 +2046,16 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
+  hono@4.12.12: {}
+
   isexe@2.0.0: {}
 
   jiti@2.6.1:
     optional: true
 
   kleur@4.1.5: {}
+
+  kuron@0.0.3: {}
 
   lightningcss-android-arm64@1.32.0:
     optional: true
