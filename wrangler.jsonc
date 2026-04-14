@@ -7,6 +7,8 @@
   "observability": {
     "enabled": true,
   },
+  "workers_dev": false,
+  "routes": [{ "custom_domain": true, "pattern": "mixi2-docs.keito.dev" }],
   "kv_namespaces": [
     {
       "binding": "KV",
