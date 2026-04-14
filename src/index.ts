@@ -12,7 +12,7 @@ const app = new Hono<Env>()
 const cron = new Cron<Env>()
 
 app.route('/healthz', healthzRoute).mount('/events', handleWebhookEvents)
-cron.schedule('0 0 * * *', handleScheduled)
+cron.schedule('0 * * * *', handleScheduled)
 
 export default {
   fetch: app.fetch,
