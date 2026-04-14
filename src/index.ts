@@ -13,6 +13,7 @@ const app = new Hono<Env>()
 const cron = new Cron<Env>()
 
 app
+  .get('/', (c) => c.redirect('https://mixi.social/@mixi2_docs'))
   .route('/healthz', healthzRoute)
   .route('/debug', debugRoute)
   .mount('/events', handleWebhookEvents)
