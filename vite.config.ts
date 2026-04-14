@@ -16,7 +16,7 @@ export default defineConfig({
         command: 'tsc --noEmit',
       },
       generate: {
-        command: 'wrangler types',
+        command: 'wrangler types --env-interface CloudflareBindings',
       },
     },
   },
