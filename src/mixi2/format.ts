@@ -11,9 +11,9 @@ const TYPE_LABELS: Record<DocChange['type'], string> = {
 }
 
 const TYPE_SYMBOLS: Record<DocChange['type'], string> = {
-  added: '+',
-  modified: '~',
-  removed: '-',
+  added: '🆕',
+  modified: '📝',
+  removed: '❌',
 }
 
 const shortName = (path: string): string => path.split('/').at(-1) ?? path
