@@ -20,12 +20,14 @@ const shortName = (path: string): string => path.split('/').at(-1) ?? path
 
 const formatChangeLine = (change: DocChange): string => {
   const lineDiffInfo =
-    change.lineDiff !== undefined ? ` (+${change.lineDiff.added}/-${change.lineDiff.removed})` : ''
+    change.lineDiff !== undefined
+      ? ` (+${change.lineDiff.added} / -${change.lineDiff.removed})`
+      : ''
   return `[${TYPE_LABELS[change.type]}] ${change.path}${lineDiffInfo}`
 }
 
 const truncate = (text: string, max: number): string =>
-  text.length <= max ? text : `${text.slice(0, max - 1)}…`
+  text.length <= max ? text : `${text.slice(0, max - 3)}...`
 
 const formatDocLink = (change: DocChange): string =>
   change.type !== 'removed' ? `\ndocs: ${DOC_TOP_URL}${change.path}` : ''
@@ -60,7 +62,7 @@ export const formatSummary = (diff: DiffResult): string => {
     return count !== undefined ? [`${TYPE_LABELS[type]}: ${count}件`] : []
   })
 
-  const header = `[mixi2 Docs 更新]\n${parts.join(' / ')}`
+  const header = `[ドキュメント更新]\n${parts.join(' / ')}`
 
   return diff.changes.reduce((text, change) => {
     const line = `\n${TYPE_SYMBOLS[change.type]} ${shortName(change.path)}`
@@ -75,6 +77,6 @@ export const formatReplies = (diff: DiffResult): string[] => {
 
   return [
     ...allReplies.slice(0, MAX_REPLIES - 1),
-    `他 ${allReplies.length - MAX_REPLIES + 1}件の変更があります`,
+    `他 ${allReplies.length - MAX_REPLIES + 1} 件の変更があります`,
   ]
 }

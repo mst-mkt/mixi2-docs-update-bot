@@ -13,7 +13,7 @@ const diff = (...changes: DocChange[]): DiffResult => ({ changes })
 describe('formatSummary', () => {
   it('追加のみの場合', () => {
     const result = formatSummary(diff(change('/docs/a', 'added')))
-    expect(result).toContain('[mixi2 Docs 更新]')
+    expect(result).toContain('[ドキュメント更新]')
     expect(result).toContain('追加: 1件')
     expect(result).not.toContain('更新:')
     expect(result).not.toContain('削除:')
@@ -46,9 +46,9 @@ describe('formatSummary', () => {
         change('/docs/c', 'removed'),
       ),
     )
-    expect(result).toContain('+ client')
-    expect(result).toContain('~ b')
-    expect(result).toContain('- c')
+    expect(result).toContain('🆕 client')
+    expect(result).toContain('📝 b')
+    expect(result).toContain('❌ c')
   })
 
   it('149文字を超えない', () => {
@@ -71,7 +71,7 @@ describe('formatReplies', () => {
     const replies = formatReplies(
       diff(change('/docs/a', 'modified', { lineDiff: { added: 3, removed: 1 } })),
     )
-    expect(replies[0]).toContain('(+3/-1)')
+    expect(replies[0]).toContain('(+3 / -1)')
   })
 
   it('AI 要約がリプライに含まれる', () => {
@@ -96,7 +96,7 @@ describe('formatReplies', () => {
     const longSummary = 'あ'.repeat(200)
     const replies = formatReplies(diff(change('/docs/a', 'modified', { summary: longSummary })))
     expect(replies[0]?.length).toBeLessThanOrEqual(149)
-    expect(replies[0]).toContain('…')
+    expect(replies[0]).toContain('...')
   })
 
   it('各変更が個別のリプライになる', () => {
@@ -117,7 +117,7 @@ describe('formatReplies', () => {
     )
     const replies = formatReplies(diff(...changes))
     expect(replies.length).toBeLessThanOrEqual(9)
-    expect(replies.at(-1)).toMatch(/他 \d+件の変更があります/)
+    expect(replies.at(-1)).toMatch(/他 \d+ 件の変更があります/)
   })
 
   it('パスが非常に長い場合でも149文字を超えない', () => {
