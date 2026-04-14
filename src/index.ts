@@ -1,6 +1,7 @@
 import { Cron } from 'kuron'
 import { Hono } from 'hono'
 import { handleScheduled } from './routes/scheduled'
+import { healthzRoute } from './routes/healthz'
 
 export type Env = {
   Bindings: CloudflareBindings
@@ -9,7 +10,7 @@ export type Env = {
 const app = new Hono<Env>()
 const cron = new Cron<Env>()
 
-app.get('/', (c) => c.text('mixi2-docs-update-bot is running.'))
+app.route('/healthz', healthzRoute)
 cron.schedule('0 0 * * *', handleScheduled)
 
 export default {
