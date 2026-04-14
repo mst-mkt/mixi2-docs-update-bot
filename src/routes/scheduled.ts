@@ -1,8 +1,23 @@
 import { CronHandler } from 'kuron'
 import { Env } from '..'
 import { getAllDocs, loadDocs, saveDocs } from '../docs'
-import { computeDiff, hasChanges, summarizeChange } from '../diff'
-import { formatReplies, formatSummary, postThread } from '../mixi2'
+import { computeDiff, hasChanges, summarizeChange, type DocChange, type DocMap } from '../diff'
+import { renderDiffImage } from '../image'
+import { formatReplies, formatSummary, postThread, uploadMedia } from '../mixi2'
+
+const uploadChangeImage = async (change: DocChange, oldDocs: DocMap, newDocs: DocMap) => {
+  if (change.type === 'removed') return undefined
+
+  try {
+    const oldContent = change.type === 'added' ? '' : (oldDocs.get(change.path) ?? '')
+    const newContent = newDocs.get(change.path) ?? ''
+    const imageData = await renderDiffImage(oldContent, newContent, change.path)
+    return await uploadMedia(imageData, 'image/png')
+  } catch (e) {
+    console.error(`Failed to generate/upload image for ${change.path}:`, e)
+    return undefined
+  }
+}
 
 export const handleScheduled: CronHandler<Env> = async (c) => {
   const newDocs = await getAllDocs()
@@ -34,7 +49,24 @@ export const handleScheduled: CronHandler<Env> = async (c) => {
   }
 
   const summary = formatSummary(diffWithSummary)
-  const replies = formatReplies(diffWithSummary)
+  const replyTexts = formatReplies(diffWithSummary)
+  const isTruncated = replyTexts.length < diffWithSummary.changes.length
+
+  const mediaIds = await Promise.all(
+    replyTexts.map((_, i) => {
+      const isOverflowMessage = isTruncated && i === replyTexts.length - 1
+      const change = diffWithSummary.changes.at(i)
+
+      if (isOverflowMessage || change === undefined) return Promise.resolve(undefined)
+
+      return uploadChangeImage(change, oldDocs, newDocs)
+    }),
+  )
+
+  const replies = replyTexts.map((text, i) => ({
+    text,
+    mediaId: mediaIds.at(i),
+  }))
 
   await postThread(summary, replies)
   await saveDocs(c.env.KV, newDocs, diff)
