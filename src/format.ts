@@ -19,9 +19,8 @@ const TYPE_SYMBOLS: Record<DocChange['type'], string> = {
 const shortName = (path: string): string => path.split('/').at(-1) ?? path
 
 const formatChangeLine = (change: DocChange): string => {
-  const lineDiffInfo = change.lineDiff
-    ? ` (+${change.lineDiff.added}/-${change.lineDiff.removed})`
-    : ''
+  const lineDiffInfo =
+    change.lineDiff !== undefined ? ` (+${change.lineDiff.added}/-${change.lineDiff.removed})` : ''
   return `[${TYPE_LABELS[change.type]}] ${change.path}${lineDiffInfo}`
 }
 
@@ -33,7 +32,7 @@ const formatDocLink = (change: DocChange): string =>
 
 const buildReplyParts = (header: string, summary: string | undefined, max: number): string => {
   const truncatedHeader = truncate(header, max)
-  if (!summary) return truncatedHeader
+  if (summary === undefined) return truncatedHeader
 
   const summaryMax = max - truncatedHeader.length - 1
   if (summaryMax <= 0) return truncatedHeader
@@ -58,7 +57,7 @@ export const formatSummary = (diff: DiffResult): string => {
 
   const parts = CHANGE_TYPES.flatMap((type) => {
     const count = counts[type]?.length
-    return count ? [`${TYPE_LABELS[type]}: ${count}件`] : []
+    return count !== undefined ? [`${TYPE_LABELS[type]}: ${count}件`] : []
   })
 
   const header = `[mixi2 Docs 更新]\n${parts.join(' / ')}`

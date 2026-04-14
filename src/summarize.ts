@@ -2,11 +2,8 @@ import type { DocChange, DocMap } from './diff'
 
 const MODEL = '@cf/qwen/qwen3-30b-a3b-fp8'
 
-type Message = { role: 'system' | 'user'; content: string }
-
-export type AiClient = {
-  run(this: void, model: string, input: { messages: Message[] }): Promise<unknown>
-}
+export type AiClient = Pick<Ai, 'run'>
+export type ModelInput = Extract<AiModels[typeof MODEL]['inputs'], { messages: unknown }>
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null

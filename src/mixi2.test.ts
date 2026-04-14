@@ -8,13 +8,13 @@ const createMockClient = (postIds: (string | undefined)[]) => {
   const calls: Call[] = []
   const idIterator = postIds[Symbol.iterator]()
 
-  const client: Mixi2Client = {
+  const client = {
     createPost: (params) => {
       calls.push({ text: params.text, inReplyToPostId: params.inReplyToPostId })
       const postId = idIterator.next().value
       return Promise.resolve({ post: postId ? { postId } : undefined })
     },
-  }
+  } as Mixi2Client
 
   return { client, calls }
 }

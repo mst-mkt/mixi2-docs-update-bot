@@ -3,17 +3,19 @@ import type { DiffResult, DocMap } from './diff'
 import type { KVStore } from './kv'
 import { loadDocs, saveDocs } from './kv'
 
-const createMockKV = (store = new Map<string, string>()): KVStore => ({
-  get: vi.fn((key: string) => Promise.resolve(store.get(key) ?? null)),
-  put: vi.fn((key: string, value: string) => {
-    store.set(key, value)
-    return Promise.resolve()
-  }),
-  delete: vi.fn((key: string) => {
-    store.delete(key)
-    return Promise.resolve()
-  }),
-})
+const createMockKV = (store = new Map<string, string>()) => {
+  return {
+    get: vi.fn((key: string) => Promise.resolve(store.get(key) ?? null)),
+    put: vi.fn((key: string, value: string) => {
+      store.set(key, value)
+      return Promise.resolve()
+    }),
+    delete: vi.fn((key: string) => {
+      store.delete(key)
+      return Promise.resolve()
+    }),
+  } as unknown as KVStore
+}
 
 describe('loadDocs', () => {
   it('manifest が存在しない場合は空の Map を返す', async () => {

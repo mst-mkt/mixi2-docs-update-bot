@@ -1,10 +1,6 @@
 import type { DiffResult, DocMap } from './diff'
 
-export type KVStore = {
-  get(this: void, key: string): Promise<string | null>
-  put(this: void, key: string, value: string): Promise<void>
-  delete(this: void, key: string): Promise<void>
-}
+export type KVStore = Pick<KVNamespace, 'get' | 'put' | 'delete'>
 
 const MANIFEST_KEY = 'manifest'
 const docKey = (path: string) => `doc:${path}`

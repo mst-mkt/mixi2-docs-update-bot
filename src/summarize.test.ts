@@ -2,18 +2,19 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vite-plus/test'
 import { type DocMap, computeDiff } from './diff'
-import type { AiClient } from './summarize'
-import { summarizeChange } from './summarize'
+import { type AiClient, type ModelInput, summarizeChange } from './summarize'
 
 const fixturesDir = resolve(import.meta.dirname, '../tests/fixtures')
 const readFixture = (name: string): string => readFileSync(resolve(fixturesDir, name), 'utf-8')
 
-const createMockAI = (response: string): AiClient => ({
-  run: vi.fn(() => Promise.resolve({ response })),
+const createMockAI = (response: string) => ({
+  run: vi.fn(() => Promise.resolve({ response })) as unknown as AiClient['run'],
 })
 
-const createMockAIChoices = (content: string): AiClient => ({
-  run: vi.fn(() => Promise.resolve({ choices: [{ message: { content } }] })),
+const createMockAIChoices = (content: string) => ({
+  run: vi.fn(() =>
+    Promise.resolve({ choices: [{ message: { content } }] }),
+  ) as unknown as AiClient['run'],
 })
 
 describe('summarizeChange', () => {
@@ -30,8 +31,8 @@ describe('summarizeChange', () => {
     const mockAI = createMockAI('要約テキスト')
     await summarizeChange(mockAI, change, newDocs, oldDocs)
 
-    const messages = vi.mocked(mockAI.run).mock.calls[0]?.[1]?.messages ?? []
-    const userMessage = messages.find((m) => m.role === 'user')?.content ?? ''
+    const input = vi.mocked(mockAI.run).mock.calls[0]?.[1] as ModelInput
+    const userMessage = input.messages.find((m) => m.role === 'user')?.content ?? ''
 
     expect(userMessage).toContain('/docs/getting-started')
     expect(userMessage).toContain('更新後のドキュメント全文')
@@ -50,8 +51,8 @@ describe('summarizeChange', () => {
     const mockAI = createMockAI('要約テキスト')
     await summarizeChange(mockAI, change, newDocs, oldDocs)
 
-    const messages = vi.mocked(mockAI.run).mock.calls[0]?.[1]?.messages ?? []
-    const userMessage = messages.find((m) => m.role === 'user')?.content ?? ''
+    const input = vi.mocked(mockAI.run).mock.calls[0]?.[1] as ModelInput
+    const userMessage = input.messages.find((m) => m.role === 'user')?.content ?? ''
 
     expect(userMessage).toContain('新しいドキュメントが追加されました')
     expect(userMessage).toContain('ドキュメント全文')
@@ -67,8 +68,8 @@ describe('summarizeChange', () => {
     const mockAI = createMockAI('要約テキスト')
     await summarizeChange(mockAI, change, newDocs, oldDocs)
 
-    const messages = vi.mocked(mockAI.run).mock.calls[0]?.[1]?.messages ?? []
-    const userMessage = messages.find((m) => m.role === 'user')?.content ?? ''
+    const input = vi.mocked(mockAI.run).mock.calls[0]?.[1] as ModelInput
+    const userMessage = input.messages.find((m) => m.role === 'user')?.content ?? ''
 
     expect(userMessage).toContain('ドキュメントが削除されました')
     expect(userMessage).toContain('削除されたドキュメント全文')

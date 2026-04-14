@@ -1,15 +1,9 @@
 import { createAuthenticator, createMixi2Client } from '@mst-mkt/mixi2-application-sdk-ts'
 import { createGrpcTransport } from './transport'
 
-type FullClient = ReturnType<typeof createMixi2Client>
+export type Mixi2Client = ReturnType<typeof createMixi2Client>
 
-export type Mixi2Client = {
-  createPost: (...args: Parameters<FullClient['createPost']>) => Promise<{
-    post?: { postId?: string }
-  }>
-}
-
-export const createClient = (env: Env): FullClient => {
+export const createClient = (env: CloudflareBindings): Mixi2Client => {
   const authenticator = createAuthenticator({
     clientId: env.MIXI2_CLIENT_ID,
     clientSecret: env.MIXI2_CLIENT_SECRET,
@@ -34,7 +28,7 @@ const postReplies = async (
     inReplyToPostId: parentPostId,
   })
 
-  if (post?.postId && rest.length > 0) {
+  if (post?.postId !== undefined && rest.length > 0) {
     await postReplies(client, rest, post.postId)
   }
 }
@@ -45,7 +39,8 @@ export const postThread = async (
   replies: string[],
 ): Promise<void> => {
   const { post: rootPost } = await client.createPost({ text: summary })
-  if (rootPost?.postId) {
+
+  if (rootPost?.postId !== undefined) {
     await postReplies(client, replies, rootPost.postId)
   }
 }
