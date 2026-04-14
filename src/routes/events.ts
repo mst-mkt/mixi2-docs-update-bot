@@ -1,8 +1,6 @@
 import { createEventHandler, createWebhookHandler } from '@mst-mkt/mixi2-application-sdk-ts'
 import { env } from 'cloudflare:workers'
-import { createClient } from '../mixi2'
-
-const mixi2Client = createClient(env)
+import { mixi2Client } from '../mixi2'
 
 const eventHandlers = createEventHandler({
   postCreated: async ({ post }) => {
