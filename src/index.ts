@@ -1,6 +1,6 @@
 import { Cron } from 'kuron'
 import { Hono } from 'hono'
-import { handleScheduled } from './routes/scheduled'
+import { handleScheduled, handleScheduledError } from './routes/scheduled'
 import { healthzRoute } from './routes/healthz'
 import { handleWebhookEvents } from './routes/events'
 import { debugRoute } from './routes/debug'
@@ -18,7 +18,9 @@ app
   .route('/debug', debugRoute)
   .mount('/events', handleWebhookEvents)
 
-cron.schedule('0 * * * *', handleScheduled)
+cron
+  .schedule('0 * * * *', handleScheduled) // every hour
+  .onError(handleScheduledError)
 
 export default {
   fetch: app.fetch,

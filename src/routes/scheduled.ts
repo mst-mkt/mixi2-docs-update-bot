@@ -1,9 +1,9 @@
-import { CronHandler } from 'kuron'
+import { CronErrorHandler, CronHandler } from 'kuron'
 import { Env } from '..'
 import { getAllDocs, loadDocs, saveDocs } from '../docs'
 import { computeDiff, hasChanges, summarizeChange, type DocChange, type DocMap } from '../diff'
 import { renderDiffImage } from '../image'
-import { formatReplies, formatSummary, postThread, uploadMedia } from '../mixi2'
+import { formatReplies, formatSummary, mixi2Client, postThread, uploadMedia } from '../mixi2'
 
 const uploadChangeImage = async (change: DocChange, oldDocs: DocMap, newDocs: DocMap) => {
   if (change.type === 'removed') return undefined
@@ -72,4 +72,12 @@ export const handleScheduled: CronHandler<Env> = async (c) => {
   await saveDocs(c.env.KV, newDocs, diff)
 
   console.log(`Posted thread: 1 summary + ${replies.length} replies`)
+}
+
+export const handleScheduledError: CronErrorHandler<Env> = async () => {
+  await mixi2Client.createPost({
+    publishingType: 1, // NOT_PUBLISHING
+    text: `⚠️ 定期実行でエラーが発生しました。
+@mst_mkt`,
+  })
 }
