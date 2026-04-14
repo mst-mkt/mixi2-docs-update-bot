@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test'
-import type { DiffResult, DocChange } from './diff'
+import type { DiffResult, DocChange } from '../diff'
 import { formatReplies, formatSummary } from './format'
 
 const change = (

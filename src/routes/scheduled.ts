@@ -1,11 +1,8 @@
 import { CronHandler } from 'kuron'
 import { Env } from '..'
-import { getAllDocs } from '../docs'
-import { loadDocs, saveDocs } from '../kv'
-import { computeDiff, hasChanges } from '../diff'
-import { summarizeChange } from '../summarize'
-import { postThread } from '../mixi2'
-import { formatReplies, formatSummary } from '../format'
+import { getAllDocs, loadDocs, saveDocs } from '../docs'
+import { computeDiff, hasChanges, summarizeChange } from '../diff'
+import { formatReplies, formatSummary, postThread } from '../mixi2'
 
 export const handleScheduled: CronHandler<Env> = async (c) => {
   const newDocs = await getAllDocs()

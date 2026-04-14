@@ -1,4 +1,4 @@
-import type { DiffResult, DocMap } from './diff'
+import type { DiffResult, DocMap } from '../diff'
 
 export type KVStore = Pick<KVNamespace, 'get' | 'put' | 'delete'>
 

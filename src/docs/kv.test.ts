@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vite-plus/test'
-import type { DiffResult, DocMap } from './diff'
+import type { DiffResult, DocMap } from '../diff'
 import type { KVStore } from './kv'
 import { loadDocs, saveDocs } from './kv'
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { type DocMap, computeDiff, hasChanges } from './diff'
+import { type DocMap, computeDiff, hasChanges } from '.'
 
 const map = (...entries: [string, string][]): DocMap => new Map(entries)
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test'
-import { getAllDocs } from './docs'
+import { getAllDocs } from '.'
 
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)

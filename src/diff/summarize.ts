@@ -1,4 +1,4 @@
-import type { DocChange, DocMap } from './diff'
+import type { DocChange, DocMap } from '.'
 
 const MODEL = '@cf/qwen/qwen3-30b-a3b-fp8'
 

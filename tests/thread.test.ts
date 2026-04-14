@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vite-plus/test'
 import { type DocMap, computeDiff, hasChanges } from '../src/diff'
-import { formatReplies, formatSummary } from '../src/format'
+import { formatReplies, formatSummary } from '../src/mixi2/format'
 
 const fixturesDir = resolve(import.meta.dirname, 'fixtures')
 

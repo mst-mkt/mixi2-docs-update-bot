@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vite-plus/test'
-import { type DocMap, computeDiff } from './diff'
+import { type DocMap, computeDiff } from '.'
 import { type AiClient, type ModelInput, summarizeChange } from './summarize'
 
-const fixturesDir = resolve(import.meta.dirname, '../tests/fixtures')
+const fixturesDir = resolve(import.meta.dirname, '../../tests/fixtures')
 const readFixture = (name: string): string => readFileSync(resolve(fixturesDir, name), 'utf-8')
 
 const createMockAI = (response: string) => ({

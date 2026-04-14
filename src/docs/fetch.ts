@@ -1,4 +1,4 @@
-import type { DocMap } from './diff'
+import type { DocMap } from '../diff'
 
 export const DOC_TOP_URL = 'https://developer.mixi.social'
 const HEADING_PATH_PATTERN = /^# .+ \((.+)\)$/

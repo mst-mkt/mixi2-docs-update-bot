@@ -1,5 +1,5 @@
-import type { DiffResult, DocChange } from './diff'
-import { DOC_TOP_URL } from './docs'
+import type { DiffResult, DocChange } from '../diff'
+import { DOC_TOP_URL } from '../docs'
 
 const MAX_POST_LENGTH = 149
 const MAX_REPLIES = 9
