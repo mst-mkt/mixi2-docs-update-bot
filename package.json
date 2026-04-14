@@ -8,9 +8,13 @@
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-node": "^2.1.1",
     "@mst-mkt/mixi2-application-sdk-ts": "^0.4.0",
+    "@takumi-rs/helpers": "^1.0.9",
+    "@takumi-rs/wasm": "^1.0.9",
     "diff": "^8.0.3",
     "hono": "^4.12.12",
-    "kuron": "^0.0.3"
+    "kuron": "^0.0.3",
+    "shiki": "^4.0.2",
+    "takumi-js": "^1.0.9"
   },
   "devDependencies": {
     "@typescript/native-preview": "7.0.0-dev.20260309.1",

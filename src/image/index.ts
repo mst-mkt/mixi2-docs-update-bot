@@ -1,0 +1,1 @@
+export { renderDiffImage } from './render'
