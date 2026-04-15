@@ -83,15 +83,26 @@ describe('uploadMedia', () => {
   })
 
   it('ポーリングがタイムアウトした場合に例外を投げる', async () => {
+    vi.useFakeTimers()
     mockInitiate.mockResolvedValue({ mediaId: 'media-1', uploadUrl: 'https://upload.example.com' })
     mockGetAccessToken.mockResolvedValue('token-123')
     mockFetch.mockResolvedValue({ ok: true })
     mockGetStatus.mockResolvedValue({ status: 2 }) // PROCESSING
 
-    await expect(uploadMedia(imageData, 'image/png')).rejects.toThrow('Media processing timeout')
-  }, 30_000)
+    const promise = uploadMedia(imageData, 'image/png').catch((e: unknown) => e)
+
+    for (let i = 0; i < 25; i++) {
+      await vi.advanceTimersByTimeAsync(5_000)
+    }
+
+    const error = await promise
+    expect(error).toBeInstanceOf(Error)
+    expect((error as Error).message).toBe('Media processing timeout')
+    vi.useRealTimers()
+  })
 
   it('ポーリングで複数回 PROCESSING 後に COMPLETED になる', async () => {
+    vi.useFakeTimers()
     mockInitiate.mockResolvedValue({ mediaId: 'media-1', uploadUrl: 'https://upload.example.com' })
     mockGetAccessToken.mockResolvedValue('token-123')
     mockFetch.mockResolvedValue({ ok: true })
@@ -100,9 +111,15 @@ describe('uploadMedia', () => {
       .mockResolvedValueOnce({ status: 2 }) // PROCESSING
       .mockResolvedValueOnce({ status: 3 }) // COMPLETED
 
-    const result = await uploadMedia(imageData, 'image/png')
+    const promise = uploadMedia(imageData, 'image/png')
+    await vi.advanceTimersByTimeAsync(5_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+    await vi.advanceTimersByTimeAsync(5_000)
+
+    const result = await promise
 
     expect(result).toBe('media-1')
     expect(mockGetStatus).toHaveBeenCalledTimes(3)
+    vi.useRealTimers()
   })
 })

@@ -1,8 +1,8 @@
 import { getAccessToken } from './auth'
 import { mixi2Client } from './client'
 
-const POLL_INTERVAL_MS = 500
-const MAX_POLL_ATTEMPTS = 20
+const POLL_INTERVAL_MS = 5_000
+const POLL_TIMEOUT_MS = 2 * 60 * 1_000
 
 export const uploadMedia = async (data: ArrayBuffer, contentType: string, description?: string) => {
   const { mediaId, uploadUrl } = await mixi2Client.initiatePostMediaUpload({
@@ -26,7 +26,9 @@ export const uploadMedia = async (data: ArrayBuffer, contentType: string, descri
     throw new Error(`Media upload failed: ${uploadRes.status}`)
   }
 
-  for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
+  const deadline = Date.now() + POLL_TIMEOUT_MS
+
+  while (Date.now() < deadline) {
     const { status } = await mixi2Client.getPostMediaStatus({ mediaId })
     if (status === 3) return mediaId // COMPLETED
     if (status === 4) throw new Error('Media processing failed') // FAILED
