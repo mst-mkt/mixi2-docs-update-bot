@@ -48,7 +48,7 @@ describe('uploadMedia', () => {
     expect(mockFetch).toHaveBeenCalledWith('https://upload.example.com', {
       method: 'POST',
       headers: {
-        'Content-Type': 'image/png',
+        'Content-Type': 'application/octet-stream',
         Authorization: 'Bearer token-123',
       },
       body: imageData,

@@ -16,7 +16,7 @@ export const uploadMedia = async (data: ArrayBuffer, contentType: string, descri
   const uploadRes = await fetch(uploadUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': contentType,
+      'Content-Type': 'application/octet-stream',
       Authorization: `Bearer ${accessToken}`,
     },
     body: data,
