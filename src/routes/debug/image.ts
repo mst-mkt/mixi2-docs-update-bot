@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
-import type { Env } from '..'
-import { renderDiffImage } from '../image/'
+import type { Env } from '../..'
+import { renderDiffImage } from '../../image/'
 
 const SAMPLE_OLD = `# サンプル
 
@@ -69,7 +69,7 @@ const buildContent = (section: string, repeat: number) => {
   return [...Array(repeat)].map(() => section).join('\n')
 }
 
-export const debugRoute = new Hono<Env>().get('/image', async (c) => {
+export const imageRoute = new Hono<Env>().get('/', async (c) => {
   const repeat = Number.parseInt(c.req.query('repeat') ?? '1') || 1
 
   const clamped = Math.max(1, Math.min(16, repeat))
