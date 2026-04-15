@@ -1,6 +1,6 @@
 import type { DocChange, DocMap } from '.'
 
-const MODEL = '@cf/qwen/qwen3-30b-a3b-fp8'
+const MODEL = '@cf/google/gemma-4-26b-a4b-it' as keyof AiModels
 
 export type AiClient = Pick<Ai, 'run'>
 export type ModelInput = Extract<AiModels[typeof MODEL]['inputs'], { messages: unknown }>
