@@ -17,6 +17,7 @@
   ],
   "ai": {
     "binding": "AI",
+    "remote": true,
   },
   "triggers": {
     "crons": ["0 * * * *"],
