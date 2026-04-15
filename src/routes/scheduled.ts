@@ -5,6 +5,30 @@ import { computeDiff, hasChanges, summarizeChange, type DocChange, type DocMap }
 import { renderDiffImage } from '../image'
 import { formatReplies, formatSummary, mixi2Client, postThread, uploadMedia } from '../mixi2'
 
+const DESCRIPTION_MAX_LENGTH = 394
+
+const buildDescription = (change: DocChange): string => {
+  const typeLabel = change.type === 'added' ? '追加' : '更新'
+  const prefix = `ドキュメントの変更差分。\`${change.path}\` が${typeLabel}されている。`
+
+  if (change.summary === undefined) {
+    if (prefix.length > DESCRIPTION_MAX_LENGTH)
+      return `${prefix.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`
+    return prefix
+  }
+
+  const summaryHeader = '\n\nAI概要:'
+  const remaining = DESCRIPTION_MAX_LENGTH - prefix.length - summaryHeader.length
+  if (remaining <= 0) return `${prefix.slice(0, DESCRIPTION_MAX_LENGTH - 3)}...`
+
+  const summary =
+    change.summary.length > remaining
+      ? `${change.summary.slice(0, remaining - 3)}...`
+      : change.summary
+
+  return `${prefix}${summaryHeader}${summary}`
+}
+
 const uploadChangeImage = async (change: DocChange, oldDocs: DocMap, newDocs: DocMap) => {
   if (change.type === 'removed') return undefined
 
@@ -12,7 +36,7 @@ const uploadChangeImage = async (change: DocChange, oldDocs: DocMap, newDocs: Do
     const oldContent = change.type === 'added' ? '' : (oldDocs.get(change.path) ?? '')
     const newContent = newDocs.get(change.path) ?? ''
     const imageData = await renderDiffImage(oldContent, newContent, change.path)
-    return await uploadMedia(imageData, 'image/png')
+    return await uploadMedia(imageData, 'image/png', buildDescription(change))
   } catch (e) {
     console.error(`Failed to generate/upload image for ${change.path}:`, e)
     return undefined
